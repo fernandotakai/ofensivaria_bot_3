@@ -1,0 +1,28 @@
+version: "2"
+
+services:
+    redis:
+        image: redis
+
+    base:
+        build: .
+        volumes:
+            - .:/code
+
+        environment:
+            - REDIS_HOST=redis
+
+        ports:
+            - "8000:8000"
+
+    poll:
+        extends: base
+        links:
+            - "redis:redis"
+
+        command: /code/poll.py
+
+    app:
+        extends: base
+        links:
+            - "redis:redis"
