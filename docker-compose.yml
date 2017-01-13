@@ -11,6 +11,7 @@ services:
 
         environment:
             - REDIS_HOST=redis
+            - TOKEN=118092144:AAHyj4D1R5XvsbT1cYA3MYYebtUjoei-nGM
 
         ports:
             - "8000:8000"
@@ -20,7 +21,7 @@ services:
         links:
             - "redis:redis"
 
-        command: /code/poll.py
+        command: -m ofensivaria.poll
 
     app:
         extends: base

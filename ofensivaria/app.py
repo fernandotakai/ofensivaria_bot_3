@@ -1,11 +1,11 @@
-import config
 import logging
 
 from sanic import Sanic
 from sanic.views import HTTPMethodView
 from sanic.response import text
 
-from bot import TelegramBot
+from ofensivaria import config
+from ofensivaria.bot import TelegramBot
 
 logging.basicConfig()
 

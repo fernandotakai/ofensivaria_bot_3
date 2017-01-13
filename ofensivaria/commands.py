@@ -1,7 +1,12 @@
 import re
 import random
 import logging
+
+import abc
+import six
+
 from decorator import decorator
+from ofensivaria import config
 
 
 class ValidationException(Exception):
@@ -37,6 +42,7 @@ async def preview(f, *args, **kwargs):
     return r
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Command:
 
     # can be a single slash command or a
@@ -54,6 +60,8 @@ class Command:
         self._bot = bot
         self._redis = redis
         self._http_client = http_client
+        self._logger = logging.getLogger('command')
+        self._logger.setLevel(config.LOGGING_LEVEL)
 
         if isinstance(self.SLASH_COMMAND, str):
             self.SLASH_COMMAND = [self.SLASH_COMMAND]
@@ -63,6 +71,10 @@ class Command:
             command_re = r'^\/(%s)\s?(.*)?$' % '|'.join("\\b%s\\b" % c.replace('/', '') for c in self._commands.keys())
             self._slash_re = re.compile(command_re, re.I)
             self._slash_args_re = re.compile(r'\[(\w+)\]')
+
+    @abc.abstractmethod
+    async def respond(self, text, message):
+        pass
 
     def __validate_slash_command(self, text, message):
 
@@ -437,12 +449,5 @@ class Imgur(Command):
 
             return link
         except (KeyError, ValueError):
-            logging.exception(json)
+            self._logger.exception(json)
             return "Could not upload :("
-
-
-COMMANDS = [Ping, Title, EitherOr,
-            Help, ArchiveUrl,
-            Google, DanceGif,
-            MessageToGif, ConvertCurrency,
-            Sandstorm, Imgur]

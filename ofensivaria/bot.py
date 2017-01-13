@@ -1,12 +1,13 @@
 import io
 import asyncio
-import config
 import aiohttp
 import aioredis
-import commands
 import logging
 
-logging.basicConfig(format='%(asctime)s:%(levelname)s: %(message)s',
+from ofensivaria import config
+from stevedore import extension
+
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s: %(message)s',
                     level=logging.INFO)
 
 
@@ -19,6 +20,8 @@ class TelegramBot:
         self._file_url = 'https://api.telegram.org/file/bot{}/'.format(config.TOKEN)
         self.__setup = False
         self.__processed_status = set()
+        self.__logger = logging.getLogger('telegram-bot')
+        self.__logger.setLevel(config.LOGGING_LEVEL)
 
     @property
     def was_initialized(self):
@@ -37,6 +40,7 @@ class TelegramBot:
             else:
                 kwargs.update({'data': data})
 
+        self.__logger.debug('Sending a %s request to %s with args %s', method, url, kwargs)
         async with self.client.request(method, url, **kwargs) as response:
             response = await response.json()
             return response
@@ -101,11 +105,20 @@ class TelegramBot:
         updates = await self.redis.smembers('bot:updates')
         return set(map(int, updates))
 
+    def __extension_manager_callback(self, ext, *args, **kwargs):
+        self.__logger.info('Loading command %s', ext.name)
+        return ext.obj
+
     async def setup(self):
         self.redis = await aioredis.create_redis((config.REDIS_HOST, config.REDIS_PORT,),)
         self.__processed_status = await self.get_processed_ids()
         self.client = aiohttp.ClientSession()
-        self.commands = [cls(self, self.redis, self.client) for cls in commands.COMMANDS]
+
+        extension_manager = extension.ExtensionManager(namespace='ofensivaria.bot.commands',
+                                                       invoke_on_load=True,
+                                                       invoke_args=(self, self.redis, self.client))
+
+        self.commands = extension_manager.map(self.__extension_manager_callback)
         self.__setup = True
 
     async def polling(self):
@@ -116,10 +129,10 @@ class TelegramBot:
             updates = await self.get_updates()
 
             for update in updates:
-                logging.info("Processing %s", update)
+                self.__logger.info("Processing %s", update)
                 await self.process_update(update)
 
-            logging.info("Sleeping for %s", self._repolling)
+            self.__logger.info("Sleeping for %s", self._repolling)
             await asyncio.sleep(self._repolling)
 
     async def process_update(self, update):
@@ -137,7 +150,7 @@ class TelegramBot:
                 try:
                     await command.process(self, message)
                 except Exception as e:
-                    logging.exception(e)
+                    self.__logger.exception(e)
 
     async def cleanup(self):
         self.redis.close()

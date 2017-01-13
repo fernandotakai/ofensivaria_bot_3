@@ -1,9 +1,10 @@
 import asyncio
 import uvloop
 
-from bot import TelegramBot
+from ofensivaria.bot import TelegramBot
 
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
 
 async def main(bot):
     await bot.setup()
