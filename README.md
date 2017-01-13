@@ -12,12 +12,11 @@ We don't have tests yet :(
 
 To deploy:
 
-* `fab deploy` (but you need access to the server itself)
+* `fab -H <yourserver> --set telegram_token='<your_telegram_token>',docker_username=<your_docker_username>,host_string=<your_server> deploy`
 
 Deploying is really hacky and not pretty at all. But works.
 
 ## TODO ##
 
 * Tests
-* Improve deploy with fabric-docker -- https://docker-fabric.readthedocs.io/en/stable/index.html
 * Easier infrastructure to write commands
