@@ -496,6 +496,6 @@ class SquareMeme(Command):
     async def respond(self, text, message):
         text = message['args']['text']
         text = text.replace(' ', '')
-        if text < 2:
+        if len(text) < 2:
             return False
         return '```\n%s\n```' % self.meme(text)
