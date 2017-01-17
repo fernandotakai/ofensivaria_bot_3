@@ -289,9 +289,7 @@ class Google(Command):
         response, _ = await self.http_get("https://www.google.com.br/search?q=%s&btnI=" % url,
                                           headers=headers, as_text=True, allow_redirects=True)
 
-        answer = "Google answered %s" % response.url
-
-        return answer
+        return response.url
 
 
 class DanceGif(Command):
