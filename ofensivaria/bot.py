@@ -54,13 +54,16 @@ class TelegramBot:
         response = await self.__request('getUpdates', data=data)
         return response.get('result', [])
 
-    async def send_message(self, chat_id, message, in_reply_to=None, preview=False):
+    async def send_message(self, chat_id, message, in_reply_to=None, preview=False, markdown=False):
         data = dict(chat_id=chat_id, text=message)
 
         if in_reply_to:
             data['reply_to_message_id'] = int(in_reply_to)
 
         data['disable_web_page_preview'] = 'true' if not preview else 'false'
+
+        if markdown:
+            data['parse_mode'] = 'Markdown'
 
         return await self.__request('sendMessage', 'post', data=data)
 

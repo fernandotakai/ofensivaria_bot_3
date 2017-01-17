@@ -42,6 +42,19 @@ async def preview(f, *args, **kwargs):
     return r
 
 
+@decorator
+async def markdown(f, *args, **kwargs):
+    r = await f(*args, **kwargs)
+
+    if r:
+        if isinstance(r, dict):
+            r['markdown'] = True
+        elif isinstance(r, str):
+            r = dict(answer=r, markdown=True)
+
+    return r
+
+
 @six.add_metaclass(abc.ABCMeta)
 class Command:
 
@@ -161,10 +174,11 @@ class Command:
         answer = command_response['answer']
         needs_reply = command_response.get('needs_reply', False)
         needs_preview = command_response.get('needs_preview', False)
+        markdown = command_response.get('markdown', False)
 
         reply_id = message.get('message_id', None) if needs_reply else None
 
-        await self._bot.send_message(message['chat']['id'], answer, reply_id, needs_preview)
+        await self._bot.send_message(message['chat']['id'], answer, reply_id, needs_preview, markdown)
 
     async def process(self, bot, message):
         try:
@@ -460,3 +474,24 @@ class FlipTable(Command):
     @reply
     async def respond(self, text, message):
         return '(╯°□°）╯︵ ┻━┻'
+
+
+class SquareMeme(Command):
+
+    SLASH_COMMAND = '/square [text]'
+
+    def middle(self, string, rev):
+        string = string[1:-1]
+        for i, l in enumerate(string):
+            yield [l] + [' '] * len(string) + [rev[i]]
+
+    def meme(self, value):
+        rev = value[::-1]
+        memed = [value] + list(self.middle(value, rev)) + [rev]
+        return '\n'.join([' '.join(z) for z in memed])
+
+    @reply
+    @markdown
+    async def respond(self, text, message):
+        text = message['args']['text']
+        return '```\n%s\n```' % self.meme(text)

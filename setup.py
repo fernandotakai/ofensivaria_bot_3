@@ -34,6 +34,7 @@ setup(
             'sandstorm = ofensivaria.commands:Sandstorm',
             'imgur = ofensivaria.commands:Imgur',
             'flip_table = ofensivaria.commands:FlipTable',
+            'square_meme = ofensivaria.commands:SquareMeme',
         ],
     },
 
