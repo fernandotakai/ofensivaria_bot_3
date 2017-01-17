@@ -33,6 +33,7 @@ setup(
             'convert_currency = ofensivaria.commands:ConvertCurrency',
             'sandstorm = ofensivaria.commands:Sandstorm',
             'imgur = ofensivaria.commands:Imgur',
+            'flip_table = ofensivaria.commands:FlipTable',
         ],
     },
 

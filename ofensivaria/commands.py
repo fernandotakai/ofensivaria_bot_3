@@ -451,3 +451,12 @@ class Imgur(Command):
         except (KeyError, ValueError):
             self._logger.exception(json)
             return "Could not upload :("
+
+
+class FlipTable(Command):
+
+    SLASH_COMMAND = '/flip'
+
+    @reply
+    async def respond(self, text, message):
+        return '(╯°□°）╯︵ ┻━┻'
