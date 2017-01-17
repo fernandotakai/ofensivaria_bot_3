@@ -143,9 +143,13 @@ class Command:
     async def http_get(self, url, params=None, **kwargs):
         kwargs.update({'timeout': 30, 'params': params})
 
+        as_text = kwargs.pop('as_text', False)
         async with self._http_client.get(url, **kwargs) as response:
-            json = await response.json()
-            return response, json
+            if as_text:
+                content = await response.text()
+            else:
+                content = await response.json()
+            return response, content
 
     async def http_post(self, url, data=None, **kwargs):
         kwargs.update({'timeout': 30, 'data': data})
@@ -261,7 +265,7 @@ class ArchiveUrl(Command):
         url = message['args']['url']
 
         archive_api = 'http://archive.org/wayback/available'
-        json = await self.http_get(archive_api, params=dict(url=url))
+        _, json = await self.http_get(archive_api, params=dict(url=url))
 
         if json['archived_snapshots']:
             answer = json['archived_snapshots']['closest']['url']
@@ -277,11 +281,13 @@ class Google(Command):
     SLASH_COMMAND = '/google [query]'
 
     @reply
+    @preview
     async def respond(self, text, message):
         url = message['args']['query']
 
         headers = {'User-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0'}
-        response, _ = await self.http_get("https://www.google.com.br/search?q=%s&btnI=" % url, headers=headers)
+        response, _ = await self.http_get("https://www.google.com.br/search?q=%s&btnI=" % url,
+                                          headers=headers, as_text=True, allow_redirects=True)
 
         answer = "Google answered %s" % response.url
 
