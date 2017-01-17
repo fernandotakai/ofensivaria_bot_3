@@ -482,6 +482,7 @@ class SquareMeme(Command):
 
     def middle(self, string, rev):
         string = string[1:-1]
+        rev = rev[1:-1]
         for i, l in enumerate(string):
             yield [l] + [' '] * len(string) + [rev[i]]
 
