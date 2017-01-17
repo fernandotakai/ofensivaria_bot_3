@@ -494,4 +494,5 @@ class SquareMeme(Command):
     @markdown
     async def respond(self, text, message):
         text = message['args']['text']
+        text = text.replace(' ', '')
         return '```\n%s\n```' % self.meme(text)
