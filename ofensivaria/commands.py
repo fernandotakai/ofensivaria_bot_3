@@ -475,7 +475,6 @@ class FlipTable(Command):
 
     SLASH_COMMAND = '/flip'
 
-    @reply
     async def respond(self, text, message):
         return '(╯°□°）╯︵ ┻━┻'
 
@@ -495,7 +494,6 @@ class SquareMeme(Command):
         memed = [value] + list(self.middle(value, rev)) + [rev]
         return '\n'.join([' '.join(z) for z in memed])
 
-    @reply
     @markdown
     async def respond(self, text, message):
         text = message['args']['text']
