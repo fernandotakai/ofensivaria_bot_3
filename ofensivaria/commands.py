@@ -479,6 +479,14 @@ class FlipTable(Command):
         return '(╯°□°）╯︵ ┻━┻'
 
 
+class Shrug(Command):
+
+    SLASH_COMMAND = '/shrug'
+
+    async def respond(self, text, message):
+        return '¯\_(ツ)_/¯'
+
+
 class SquareMeme(Command):
 
     SLASH_COMMAND = '/square [text]'
