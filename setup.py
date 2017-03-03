@@ -35,6 +35,7 @@ setup(
             'imgur = ofensivaria.commands:Imgur',
             'flip_table = ofensivaria.commands:FlipTable',
             'square_meme = ofensivaria.commands:SquareMeme',
+            'shrug = ofensivaria.commands:Shrug',
         ],
     },
 
