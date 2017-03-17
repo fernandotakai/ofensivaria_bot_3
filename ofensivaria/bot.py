@@ -14,7 +14,7 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s: %(message)s',
 class TelegramBot:
 
     def __init__(self):
-        self._repolling = 5
+        self._repolling = 2
         self._redis = None
         self._url = 'https://api.telegram.org/bot{}'.format(config.TOKEN)
         self._file_url = 'https://api.telegram.org/file/bot{}/'.format(config.TOKEN)

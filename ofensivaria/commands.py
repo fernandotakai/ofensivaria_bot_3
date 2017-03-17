@@ -492,11 +492,35 @@ class RussianRouletteCommand(Command):
     SLASH_COMMAND = '/roulette'
 
     async def respond(self, text, message):
+        username = message['from']['first_name']
+
         if random.randint(1, 6) == 3:
+            await self._redis.hincrby('russian', username, 1)
             return "BANG! ~reloading"
         else:
             return "*click*"
 
+
+class RussianScoreboardCommand(Command):
+
+    SLASH_COMMAND = '/scoreboard'
+
+    def _format(self, rank, values):
+        word = 'time' if int(values[1]) <= 1 else 'times'
+        return f'{rank}.\t{values[0]} - {values[1]} {word}'
+
+    @markdown
+    async def respond(self, text, message):
+        values = await self._redis.hgetall('russian')
+
+        if not values:
+            return 'No one killed themselves yet :)'
+
+        sorted_values = sorted(values.items(), key=lambda v: v[1], reverse=True)
+        sorted_values = {k.decode("utf8"): v.decode('utf8') for k, v in sorted_values}
+
+        scoreboard = '\n'.join(self._format(i, v) for i, v in enumerate(sorted_values.items(), start=1))
+        return f'```\n{scoreboard}\n```'
 
 class SquareMeme(Command):
 

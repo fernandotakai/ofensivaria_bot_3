@@ -37,6 +37,7 @@ setup(
             'square_meme = ofensivaria.commands:SquareMeme',
             'shrug = ofensivaria.commands:Shrug',
             'russian_roulette = ofensivaria.commands:RussianRouletteCommand',
+            'russian_scoreboard = ofensivaria.commands:RussianScoreboardCommand',
         ],
     },
 
