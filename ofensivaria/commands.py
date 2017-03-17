@@ -487,6 +487,17 @@ class Shrug(Command):
         return '¯\_(ツ)_/¯'
 
 
+class RussianRouletteCommand(Command):
+
+    SLASH_COMMAND = '/roulette'
+
+    async def respond(self, text, message):
+        if random.randint(1, 6) == 3:
+            return "BANG! ~reloading"
+        else:
+            return "*click*"
+
+
 class SquareMeme(Command):
 
     SLASH_COMMAND = '/square [text]'

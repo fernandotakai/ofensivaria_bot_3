@@ -36,6 +36,7 @@ setup(
             'flip_table = ofensivaria.commands:FlipTable',
             'square_meme = ofensivaria.commands:SquareMeme',
             'shrug = ofensivaria.commands:Shrug',
+            'russian_roulette = ofensivaria.commands:RussianRouletteCommand',
         ],
     },
 
