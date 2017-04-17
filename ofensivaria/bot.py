@@ -4,6 +4,8 @@ import aiohttp
 import aioredis
 import logging
 
+from itertools import chain
+
 from ofensivaria import config
 from stevedore import extension
 
@@ -94,6 +96,9 @@ class TelegramBot:
     async def webhook_info(self):
         return await self.__request('getWebhookInfo')
 
+    def get_slash_commands(self):
+        return chain(*[c.SLASH_COMMAND for c in self.commands if c.SLASH_COMMAND])
+
     async def reset_webhook(self):
         data = {
             'url': '{}?token={}'.format(config.URL, config.TOKEN)
@@ -126,7 +131,6 @@ class TelegramBot:
     async def setup(self):
         self.redis = await aioredis.create_redis((config.REDIS_HOST, config.REDIS_PORT,),)
         self.__processed_status = await self.get_processed_ids()
-        print(self.__processed_status)
         self.client = aiohttp.ClientSession()
 
         extension_manager = extension.ExtensionManager(namespace='ofensivaria.bot.commands',

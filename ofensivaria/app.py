@@ -35,7 +35,10 @@ class TelegramRoute(HTTPMethodView):
     async def get(self, request):
         me = await bot.me()
         info = await bot.webhook_info()
-        return text("Hello! My name is {} and my webhook info is {}".format(me['result']['username'], str(info)))
+        commands = [(c.split(' ')[0][1:], c) for c in bot.get_slash_commands()]
+        commands = '\n'.join([f'{c} - {d}' for c, d in sorted(commands)])
+
+        return text("Hello! My name is {} and my webhook info is {}.\n\n my commands are \n{}".format(me['result']['username'], str(info), commands))
 
     async def post(self, request):
         logging.info('%s %s %s', request.url, request.method, request.json)
