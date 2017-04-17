@@ -1,3 +1,5 @@
+import asyncio
+
 import re
 import random
 import logging
@@ -7,6 +9,8 @@ import six
 
 from decorator import decorator
 from ofensivaria import config
+
+from itertools import chain
 
 
 class ValidationException(Exception):
@@ -544,3 +548,63 @@ class SquareMeme(Command):
         if len(text) < 2:
             return False
         return '```\n%s\n```' % self.meme(text)
+
+
+class YugiOhCard(Command):
+
+    SLASH_COMMAND = ('/downloadcards', '/randomcard')
+    URL = 'http://yugioh.wikia.com/wiki/Special:Ask/-5B-5BMedium::TCG-5D-5D/mainlabel%3D/limit%3D500/format%3Djson/offset%3D'
+
+    async def _get(self, url):
+        async with self._http_client.get(url) as response:
+            return await response.json()
+
+    async def _get_image(self, card_name):
+        url = f'http://yugiohprices.com/api/card_image/{card_name}'
+
+        async with self._http_client.get(url) as response:
+            if response.status == 404:
+                return False
+
+            return response.history[0].headers['Location']
+
+    async def command_downloadcards(self, *args, **kwargs):
+        number = await self._redis.scard('cards')
+
+        if not number:
+            urls = [self.URL + str(offset) for offset in range(0, 6000, 500)]
+            tasks = [self._get(url) for url in urls]
+            results = await asyncio.gather(*tasks)
+
+            cards = [c['results'].keys() for c in results]
+            cards = list(chain(*cards))
+
+            await self._redis.sadd('cards', *cards)
+            number = await self._redis.scard('cards')
+
+        return f'Downloaded {number}'
+
+    async def command_randomcard(self, text, message, **kwargs):
+        while True:
+            card_name = await self._redis.srandmember('cards')
+            card_name = card_name.decode('utf8')
+
+            image = await self._redis.hget('card_cache', card_name)
+
+            if not image:
+                image = await self._get_image(card_name)
+            else:
+                image = image.decode('utf8')
+
+            if image:
+                response = await self._bot.send_photo(message['chat']['id'], image, caption=card_name)
+                file_id = response['result']['photo'][0]['file_id']
+                await self._redis.hset('card_cache', card_name, file_id)
+
+                return ''
+
+    async def respond(self, text, message):
+        command = message.get('command', None)
+
+        method = getattr(self, 'command_%s' % command)
+        return await method(text, message, **message['args'])

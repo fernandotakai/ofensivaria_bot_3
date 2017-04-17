@@ -77,6 +77,17 @@ class TelegramBot:
 
         return await self.__request('sendDocument', 'post', data=data, headers=headers)
 
+    async def send_photo(self, chat_id, file_id_or_url, caption=None, in_reply_to=None, preview=False):
+        data = dict(chat_id=chat_id, photo=file_id_or_url)
+
+        if in_reply_to:
+            data['reply_to_message_id'] = int(in_reply_to)
+
+        if caption:
+            data['caption'] = caption
+
+        return await self.__request('sendPhoto', 'post', data=data, headers={})
+
     async def me(self):
         return await self.__request('getMe')
 
@@ -115,6 +126,7 @@ class TelegramBot:
     async def setup(self):
         self.redis = await aioredis.create_redis((config.REDIS_HOST, config.REDIS_PORT,),)
         self.__processed_status = await self.get_processed_ids()
+        print(self.__processed_status)
         self.client = aiohttp.ClientSession()
 
         extension_manager = extension.ExtensionManager(namespace='ofensivaria.bot.commands',
@@ -145,6 +157,7 @@ class TelegramBot:
 
         await self.redis.sadd('bot:updates', id)
         self.__processed_status.add(id)
+        print(self.__processed_status)
 
         message = update.get('message')
 
