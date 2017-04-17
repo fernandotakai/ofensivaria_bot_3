@@ -84,7 +84,8 @@ def start_redis():
 STEPS = {
     'running': (build, push, stop, remove, pull, start_redis, start_from_scratch, start),
     'exited': (build, push, remove, pull, start_redis, start_from_scratch, start),
-    'deleted': (build, push, pull, start_redis, start_from_scratch, start)
+    'deleted': (build, push, pull, start_redis, start_from_scratch, start),
+    'created': (build, push, pull, start_redis, start_from_scratch, start)
 }
 
 
@@ -98,7 +99,6 @@ def deploy():
 def get_container_status(container_name):
     try:
         container = docker_client.containers(filters={'name': container_name}, all=True)[0]
-
         return container['State']
     except IndexError:
         return 'deleted'
