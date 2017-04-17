@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.6
 
 # cache the freaking requirements.txt
 RUN mkdir /code
