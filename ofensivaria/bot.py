@@ -161,7 +161,6 @@ class TelegramBot:
 
         await self.redis.sadd('bot:updates', id)
         self.__processed_status.add(id)
-        print(self.__processed_status)
 
         message = update.get('message')
 
