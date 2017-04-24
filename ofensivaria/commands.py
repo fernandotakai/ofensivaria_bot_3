@@ -507,11 +507,13 @@ class RussianRouletteCommand(Command):
 
 class RussianScoreboardCommand(Command):
 
+    RE_REPLACE = re.compile(r'`|\*|\|')
     SLASH_COMMAND = '/scoreboard'
 
     def _format(self, rank, values):
         word = 'time' if int(values[1]) <= 1 else 'times'
-        return f'{rank}.\t{values[0]} - {values[1]} {word}'
+        name = self.RE_REPLACE.sub('', values[0])
+        return f'{rank}.\t{name} - {values[1]} {word}'
 
     @markdown
     async def respond(self, text, message):
@@ -525,6 +527,7 @@ class RussianScoreboardCommand(Command):
 
         scoreboard = '\n'.join(self._format(i, v) for i, v in enumerate(sorted_values.items(), start=1))
         return f'```\n{scoreboard}\n```'
+
 
 class SquareMeme(Command):
 
@@ -597,7 +600,9 @@ class YugiOhCard(Command):
                 image = image.decode('utf8')
 
             if image:
-                response = await self._bot.send_photo(message['chat']['id'], image, caption=card_name)
+                wiki_name = card_name.replace(' ', '_')
+                caption = f'{card_name} - http://yugioh.wikia.com/wiki/{wiki_name}'
+                response = await self._bot.send_photo(message['chat']['id'], image, caption=caption)
                 file_id = response['result']['photo'][0]['file_id']
                 await self._redis.hset('card_cache', card_name, file_id)
 

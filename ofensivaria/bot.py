@@ -44,7 +44,9 @@ class TelegramBot:
 
         self.__logger.debug('Sending a %s request to %s with args %s', method, url, kwargs)
         async with self.client.request(method, url, **kwargs) as response:
+            self.__logger.debug('Got response %s', response)
             response = await response.json()
+            self.__logger.debug('Got json %s', response)
             return response
 
     async def get_updates(self):
