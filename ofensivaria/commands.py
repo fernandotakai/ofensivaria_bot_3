@@ -326,7 +326,7 @@ class MessageToGif(Command):
     async def get_gif(self, name):
         try:
             key = 'bot:gifs:%s' % name
-            return random.choice(await self._redis.lrange(key, 0, -1)).decode('utf8')
+            return random.choice(await self._redis.lrange(key, 0, -1))
         except IndexError:
             return
 
@@ -353,7 +353,7 @@ class MessageToGif(Command):
         return "forgot %s" % name
 
     async def command_randomgif(self):
-        gif_name = (await self._redis.srandmember('bot:gifs')).decode('utf8')
+        gif_name = (await self._redis.srandmember('bot:gifs'))
         return await self.get_gif(gif_name)
 
     async def command_gifs(self):
@@ -451,8 +451,6 @@ class Imgur(Command):
         if not client_id:
             return 'Nobody set my client id for imgur'
 
-        client_id = client_id.decode('utf8')
-
         file_obj = await self._bot.get_file(file_id)
         file_path = file_obj['result']['file_path']
         fd = await self._bot.download_file(file_path)
@@ -522,10 +520,10 @@ class RussianScoreboardCommand(Command):
         if not values:
             return 'No one killed themselves yet :)'
 
+        sorted_values = {k: int(v) for k, v in values.items()}
         sorted_values = sorted(values.items(), key=lambda v: v[1], reverse=True)
-        sorted_values = {k.decode("utf8"): v.decode('utf8') for k, v in sorted_values}
 
-        scoreboard = '\n'.join(self._format(i, v) for i, v in enumerate(sorted_values.items(), start=1))
+        scoreboard = '\n'.join(self._format(i, v) for i, v in enumerate(sorted_values, start=1))
         return f'```\n{scoreboard}\n```'
 
 
@@ -590,14 +588,11 @@ class YugiOhCard(Command):
     async def command_randomcard(self, text, message, **kwargs):
         while True:
             card_name = await self._redis.srandmember('cards')
-            card_name = card_name.decode('utf8')
 
             image = await self._redis.hget('card_cache', card_name)
 
             if not image:
                 image = await self._get_image(card_name)
-            else:
-                image = image.decode('utf8')
 
             if image:
                 wiki_name = card_name.replace(' ', '_')

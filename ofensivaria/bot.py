@@ -16,7 +16,7 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(name)s: %(message)s',
 class TelegramBot:
 
     def __init__(self):
-        self._repolling = 2
+        self._repolling = 4
         self._redis = None
         self._url = 'https://api.telegram.org/bot{}'.format(config.TOKEN)
         self._file_url = 'https://api.telegram.org/file/bot{}/'.format(config.TOKEN)
@@ -131,7 +131,7 @@ class TelegramBot:
         return ext.obj
 
     async def setup(self):
-        self.redis = await aioredis.create_redis((config.REDIS_HOST, config.REDIS_PORT,),)
+        self.redis = await aioredis.create_redis((config.REDIS_HOST, config.REDIS_PORT,), encoding='utf8')
         self.__processed_status = await self.get_processed_ids()
         self.client = aiohttp.ClientSession()
 
