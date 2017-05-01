@@ -521,7 +521,7 @@ class RussianScoreboardCommand(Command):
             return 'No one killed themselves yet :)'
 
         sorted_values = {k: int(v) for k, v in values.items()}
-        sorted_values = sorted(values.items(), key=lambda v: v[1], reverse=True)
+        sorted_values = sorted(sorted_values.items(), key=lambda v: v[1], reverse=True)
 
         scoreboard = '\n'.join(self._format(i, v) for i, v in enumerate(sorted_values, start=1))
         return f'```\n{scoreboard}\n```'
