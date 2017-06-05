@@ -11,6 +11,8 @@ WORKDIR /code
 RUN pip install .
 
 VOLUME /code
+VOLUME /markov
+
 EXPOSE 8000
 
 ENTRYPOINT ["python"]

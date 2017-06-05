@@ -39,6 +39,7 @@ setup(
             'russian_roulette = ofensivaria.commands:RussianRouletteCommand',
             'russian_scoreboard = ofensivaria.commands:RussianScoreboardCommand',
             'yugioh = ofensivaria.commands:YugiOhCard',
+            'quote = ofensivaria.commands:Quote',
         ],
     },
 

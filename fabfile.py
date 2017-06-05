@@ -63,7 +63,13 @@ def start_from_scratch():
         'DEBUG': ''
     }
 
-    config = docker_client.create_host_config(port_bindings={8000: 8000}, links={'redis': 'redis'})
+
+    config = docker_client.create_host_config(
+        port_bindings={8000: 8000},
+        links={'redis': 'redis'},
+        binds=['/markov:/markov']
+    )
+
 
     docker_client.create_container(get_image_name(), environment=docker_env,
                                    name='ofensivaria', host_config=config, detach=True)

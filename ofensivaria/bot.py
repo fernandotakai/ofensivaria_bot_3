@@ -140,6 +140,10 @@ class TelegramBot:
                                                        invoke_args=(self, self.redis, self.client))
 
         self.commands = extension_manager.map(self.__extension_manager_callback)
+
+        prepare_tasks = [c.prepare() for c in self.commands]
+        await asyncio.gather(*prepare_tasks)
+
         self.__setup = True
 
     async def polling(self):

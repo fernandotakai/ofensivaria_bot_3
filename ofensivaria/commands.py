@@ -1,4 +1,6 @@
 import asyncio
+import aiofiles
+import markovify
 
 import re
 import random
@@ -92,6 +94,9 @@ class Command:
     @abc.abstractmethod
     async def respond(self, text, message):
         pass
+
+    async def prepare(self):
+        return
 
     def __validate_slash_command(self, text, message):
 
@@ -608,3 +613,24 @@ class YugiOhCard(Command):
 
         method = getattr(self, 'command_%s' % command)
         return await method(text, message, **message['args'])
+
+
+class Quote(Command):
+
+    SLASH_COMMAND = ('/quote')
+
+    async def prepare(self):
+        try:
+            async with aiofiles.open('/markov/trained.json') as f:
+                data = await f.read()
+                self.model = markovify.NewlineText.from_json(data)
+                self._logger.info('Loaded model!')
+        except Exception as e:
+            self._logger.exception("Couldn't load the model")
+            self.model = None
+
+    async def respond(self, text, message):
+        if not self.model:
+            return "I don't have a model, sorry :("
+
+        return self.model.make_short_sentence(140)
