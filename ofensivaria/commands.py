@@ -621,6 +621,7 @@ class Quote(Command):
 
     SLASH_COMMAND = ('/quote [start]')
     REQUIRED_PARAMS = False
+    CLEANUP_RE = re.compile(r'@\w+\s?')
 
     async def prepare(self):
         try:
@@ -645,7 +646,13 @@ class Quote(Command):
                 start = "that"
                 start = message['args']['start']
 
-                phrase = self.model.make_sentence_with_start(start, max_chars=140)
+                if start.startswith('@ofensivaria'):
+                    start = self.CLEANUP_RE.sub('', start)
+
+                if start:
+                    phrase = self.model.make_sentence_with_start(start, max_chars=140)
+                else:
+                    phrase = self.model.make_short_sentence(140)
 
                 if not phrase:
                     return self._handle_error()
