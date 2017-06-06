@@ -75,6 +75,8 @@ class Command:
     # regex and try to validate the command using it
     REGEX = None
 
+    REQUIRED_PARAMS = False
+
     def __init__(self, bot, redis, http_client):
         self._bot = bot
         self._redis = redis
@@ -120,8 +122,8 @@ class Command:
             if len(command_args) == 1 and len(args) > 1:
                 args = [" ".join(args)]
 
-            if command_args and len(command_args) != len(args):
-                    raise ValidationException("Wrong number of arguments %s" % full_command)
+            if self.REQUIRED_PARAMS and command_args and len(command_args) != len(args):
+                raise ValidationException("Wrong number of arguments %s" % full_command)
 
             message['args'] = dict(zip(command_args, args))
         except (KeyError, IndexError):
@@ -617,7 +619,8 @@ class YugiOhCard(Command):
 
 class Quote(Command):
 
-    SLASH_COMMAND = ('/quote')
+    SLASH_COMMAND = ('/quote [start]')
+    REQUIRED_PARAMS = False
 
     async def prepare(self):
         try:
@@ -633,4 +636,12 @@ class Quote(Command):
         if not self.model:
             return "I don't have a model, sorry :("
 
-        return self.model.make_short_sentence(140)
+        if message.get('args'):
+            try:
+                start = "that"
+                start = message['args']['start']
+                return self.model.make_sentence_with_start(start, max_chars=140)
+            except KeyError:
+                return f"I didn't understand {start}"
+        else:
+            return self.model.make_short_sentence(140)
