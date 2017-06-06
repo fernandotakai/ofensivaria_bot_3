@@ -632,6 +632,10 @@ class Quote(Command):
             self._logger.exception("Couldn't load the model")
             self.model = None
 
+    def _handle_error(self, start='that'):
+        phrase = self.model.make_short_sentence(140)
+        return f"I didn't understand {start}. Here's a random thought: \"{phrase}\""
+
     async def respond(self, text, message):
         if not self.model:
             return "I don't have a model, sorry :("
@@ -640,8 +644,15 @@ class Quote(Command):
             try:
                 start = "that"
                 start = message['args']['start']
-                return self.model.make_sentence_with_start(start, max_chars=140)
-            except KeyError:
-                return f"I didn't understand {start}"
+
+                phrase = self.model.make_sentence_with_start(start, max_chars=140)
+
+                if not phrase:
+                    return self._handle_error()
+
+                return phrase
+            except Exception:
+                self._logger.exception('wat')
+                return self._handle_error()
         else:
             return self.model.make_short_sentence(140)
