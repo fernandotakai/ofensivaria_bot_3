@@ -8,6 +8,8 @@ import logging
 
 import abc
 import six
+import pytz
+from datetime import datetime
 
 from decorator import decorator
 from ofensivaria import config
@@ -663,3 +665,44 @@ class Quote(Command):
                 return self._handle_error()
         else:
             return self.model.make_short_sentence(140)
+
+class SgdqSchedule(Command):
+
+    SLASH_COMMAND = ('/sgdq')
+    TZ = pytz.timezone('America/Sao_Paulo')
+
+    def _format_event(self, event, now=False):
+        title, runners, length, _, _ = event['data']
+        scheduled_stamp = event['scheduled_t']
+        dt = self.TZ.normalize(pytz.UTC.localize(datetime.fromtimestamp(scheduled_stamp)))
+        scheduled = dt.strftime('%H:%M')
+
+        if not now:
+            return f'{scheduled} - {title} - {length}'
+        else:
+            now = self.TZ.localize(datetime.now())
+            diff = dt - now
+            return f'In {diff} - {title}'
+
+    @markdown
+    async def respond(self, text, message):
+        url = 'https://horaro.org/-/api/v1/schedules/45114j6eoi219j7ab0/ticker'
+        _, json = await self.http_get(url)
+
+        data = json['data']
+        current_event = data['ticker']['current']
+        next_event = data['ticker']['next']
+        link = data['schedule']['link']
+        current_str = next_str = None
+        data = []
+
+        if current_event:
+            data.append('Now: %s' %self._format_event(current_event))
+        else:
+            data.append('Nothing right now')
+
+        if next_event:
+            data.append(self._format_event(next_event, now=True))
+
+        result = '\n'.join(data)
+        return f"```\n{result}\n```\nFull schedule here: {link}"
