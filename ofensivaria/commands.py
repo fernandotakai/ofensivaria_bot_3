@@ -682,7 +682,7 @@ class SgdqSchedule(Command):
         if not now:
             return f'{scheduled} - {title} - {length}'
         else:
-            now = self.TZ.localize(datetime.now())
+            now = datetime.now(tz=self.LOCAL_TZ)
             diff = dt - now
             return f'In {diff} - {title}'
 
