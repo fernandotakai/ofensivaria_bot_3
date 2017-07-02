@@ -1,3 +1,4 @@
 __pycache__/
-.git
-.markov
+.git/
+.markov/
+.markov/trained.json
