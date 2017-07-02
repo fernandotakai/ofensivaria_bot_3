@@ -669,12 +669,14 @@ class Quote(Command):
 class SgdqSchedule(Command):
 
     SLASH_COMMAND = ('/sgdq')
-    TZ = pytz.timezone('America/Sao_Paulo')
+    LOCAL_TZ = pytz.timezone('America/Sao_Paulo')
+    CHICAGO_TZ = pytz.timezone('America/Chicago')
 
     def _format_event(self, event, now=False):
         title, runners, length, _, _ = event['data']
         scheduled_stamp = event['scheduled_t']
-        dt = self.TZ.normalize(pytz.UTC.localize(datetime.fromtimestamp(scheduled_stamp)))
+        dt = datetime.fromtimestamp(scheduled_stamp, tz=self.CHICAGO_TZ)
+        dt = self.LOCAL_TZ.normalize(dt)
         scheduled = dt.strftime('%H:%M')
 
         if not now:
