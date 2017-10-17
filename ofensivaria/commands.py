@@ -407,7 +407,6 @@ class ConvertCurrency(Command):
             return 'Could not get value for currency %s' % symbol
 
 
-<<<<<<< HEAD
 class MtgCard(Command):
     """ Returns the image URL of a random Magic card.
     The default preview system is used to display the image.
