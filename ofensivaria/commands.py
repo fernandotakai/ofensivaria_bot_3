@@ -424,7 +424,8 @@ class MtgCard(Command):
 
 
         card = json['cards'][0]
-        response = await self._bot.send_photo(message['chat']['id'], card['imageUrl'], caption=card['name'])
+        caption = f"{card['name']} - http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={card['multiverseid']}"
+        response = await self._bot.send_photo(message['chat']['id'], card['imageUrl'], caption=caption)
         return ""
 
 
