@@ -417,16 +417,23 @@ class MtgCard(Command):
     SLASH_COMMAND = '/mtg'
 
     async def respond(self, text, message):
-        _, json = await self.http_get('https://api.magicthegathering.io/v1/cards?random=true&pageSize=1')
+        _, json = await self.http_get('https://api.scryfall.com/cards/random')
 
         if not json or 'error' in json:
             return "Spellfire will be reprinted!"
 
 
-        card = json['cards'][0]
-        caption = f"{card['name']} - http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid={card['multiverseid']}"
-        response = await self._bot.send_photo(message['chat']['id'], card['imageUrl'], caption=caption)
-        return ""
+        try:
+            image = json['image_uri']
+            url = json['scryfall_uri']
+            name = json['name']
+            price = json['usd']
+        except KeyError:
+            return 'Could not get a card. Try again?'
+
+        caption = f"{name}\n{url}\nUSD {price}"
+        response = await self._bot.send_photo(message['chat']['id'], image, caption='')
+        return caption
 
 
 class Sandstorm(Command):
