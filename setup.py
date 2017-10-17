@@ -41,6 +41,8 @@ setup(
             'yugioh = ofensivaria.commands:YugiOhCard',
             'quote = ofensivaria.commands:Quote',
             'sgdq = ofensivaria.commands:SgdqSchedule',
+            'mtg = ofensivaria.commands:MtgCard',
+            'excuse = ofensivaria.commands:ProgrammerExcuses',
         ],
     },
 
