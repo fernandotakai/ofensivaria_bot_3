@@ -407,6 +407,7 @@ class ConvertCurrency(Command):
             return 'Could not get value for currency %s' % symbol
 
 
+<<<<<<< HEAD
 class MtgCard(Command):
     """ Returns the image URL of a random Magic card.
     The default preview system is used to display the image.
@@ -422,10 +423,27 @@ class MtgCard(Command):
         if not json or 'error' in json:
             return "Spellfire will be reprinted!"
 
-
         card = json['cards'][0]
         response = await self._bot.send_photo(message['chat']['id'], card['imageUrl'], caption=card['name'])
         return ""
+
+
+class PokeCard(Command):
+    """ Returns the image URL of a random Pokémon card.
+    The default preview system is used to display the image.
+    https://docs.pokemontcg.io/
+    Possible improvements: use the same API for searching.
+    """
+
+    SLASH_COMMAND = '/pokemon'
+
+    async def respond(self, text, message):
+        _, json = await self.http_get('https://api.pokemontcg.io/v1/cards?random=true&pageSize=1')
+
+        if not json or 'error' in json:
+            return "Spellfire will be reprinted!"
+
+        return json['cards'][0]['imageUrlHiRes']
 
 
 class Sandstorm(Command):
