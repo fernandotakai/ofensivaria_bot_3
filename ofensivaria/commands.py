@@ -442,7 +442,9 @@ class PokeCard(Command):
         if not json or 'error' in json:
             return "Spellfire will be reprinted!"
 
-        return json['cards'][0]['imageUrlHiRes']
+        card = json['cards'][0]
+        response = await self._bot.send_photo(message['chat']['id'], card['imageUrlHiRes'], caption=card['name'])
+        return ""
 
 
 class Sandstorm(Command):
