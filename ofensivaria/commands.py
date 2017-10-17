@@ -406,6 +406,24 @@ class ConvertCurrency(Command):
             return 'Could not get value for currency %s' % symbol
 
 
+class MtgCard(Command):
+    """ Returns the image URL of a random Magic card.
+    The default preview system is used to display the image.
+    https://docs.magicthegathering.io/
+    Possible improvements: use the same API for searching; display the portuguese card name, for laughs.
+    """
+
+    SLASH_COMMAND = '/mtg'
+
+    async def respond(self, text, message):
+        _, json = await self.http_get('https://api.magicthegathering.io/v1/cards?random=true&pageSize=1')
+
+        if not json or 'error' in json:
+            return "Spellfire will be reprinted!"
+
+        return json['cards'][0]['imageUrl']
+
+
 class Sandstorm(Command):
 
     SLASH_COMMAND = '/sandstorm'
