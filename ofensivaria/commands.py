@@ -415,6 +415,21 @@ class Sandstorm(Command):
         return ""
 
 
+class ProgrammerExcuses(Command):
+    """ Returns a random programmer excuse.
+    References: http://programmingexcuses.com/ , https://github.com/yelinaung/pe-api"""
+
+    SLASH_COMMAND = '/excuse'
+
+    async def respond(self, text, message):
+        _, json = await self.http_get('http://pe-api.herokuapp.com/')
+
+        if not json:
+            return "The internet tubes are clogged."
+
+        return json['message']
+
+
 class Imgur(Command):
 
     SLASH_COMMAND = '/imgurid [client_id]'
