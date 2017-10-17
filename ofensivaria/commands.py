@@ -195,7 +195,8 @@ class Command:
 
         reply_id = message.get('message_id', None) if needs_reply else None
 
-        await self._bot.send_message(message['chat']['id'], answer, reply_id, needs_preview, markdown)
+        if answer:
+            await self._bot.send_message(message['chat']['id'], answer, reply_id, needs_preview, markdown)
 
     async def process(self, bot, message):
         try:
@@ -421,7 +422,10 @@ class MtgCard(Command):
         if not json or 'error' in json:
             return "Spellfire will be reprinted!"
 
-        return json['cards'][0]['imageUrl']
+
+        card = json['cards'][0]
+        response = await self._bot.send_photo(message['chat']['id'], card['imageUrl'], caption=card['name'])
+        return ""
 
 
 class Sandstorm(Command):
