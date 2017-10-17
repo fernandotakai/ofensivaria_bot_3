@@ -428,7 +428,8 @@ class MtgCard(Command):
             url = json['scryfall_uri']
             name = json['name']
             price = json['usd']
-        except KeyError:
+        except KeyError as e:
+            self._logger.exception(e)
             return 'Could not get a card. Try again?'
 
         caption = f"{name}\n{url}\nUSD {price}"
