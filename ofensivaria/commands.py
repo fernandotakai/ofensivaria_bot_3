@@ -419,6 +419,8 @@ class MtgCard(Command):
     async def respond(self, text, message):
         _, json = await self.http_get('https://api.scryfall.com/cards/random')
 
+        self._logger.error(json)
+
         if not json or 'error' in json:
             return "Spellfire will be reprinted!"
 
