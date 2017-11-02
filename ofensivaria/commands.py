@@ -430,7 +430,7 @@ class MtgCard(Command):
             image = json['image_uris'][largest]
             url = json['scryfall_uri']
             name = json['name']
-            price = json['usd']
+            price = json.get('usd', 0)
         except KeyError as e:
             self._logger.exception(e)
             return 'Could not get a card. Try again?'
