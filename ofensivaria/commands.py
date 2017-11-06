@@ -427,7 +427,7 @@ class MtgCard(Command):
 
         try:
             largest = sorted(json['image_uris'])[0]
-            image = json['image_uris'][largest]
+            image = json['image_uris'].get('large', largest)
             url = json['scryfall_uri']
             name = json['name']
             price = json.get('usd', 0)
