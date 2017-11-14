@@ -757,3 +757,21 @@ class SgdqSchedule(Command):
 
         result = '\n'.join(data)
         return f"```\n{result}\n```\nFull schedule here: {link}"
+
+
+class MagicEightBall(Command):
+
+    SLASH_COMMAND = ('/8ball [question]')
+    ANSWERS = [
+        "Definitivamente", "Sem dúvidas", "Você pode contar com isso", "Sinais apontam que sim",
+        "Como eu vejo, sim", "Responda nebuloso, tente novamente", "Pergunte novamente mais tarde",
+        "Melhor não te falar agora", "Não é possível prever agora", "Concentre-se e pergunte novamente",
+        "Não conte com isso", "Minha resposta é não", "Minhas fontes dizem não",
+        "A Perspectiva não é boa", "Muito duvidoso",
+    ]
+
+    REGEX = re.compile("@[A-z0-9_-]+\s(.+?)\?+$", re.UNICODE)
+
+    @reply
+    async def respond(self, text, message):
+        return random.choice(self.ANSWERS)
