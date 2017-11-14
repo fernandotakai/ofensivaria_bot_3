@@ -764,10 +764,10 @@ class MagicEightBall(Command):
     SLASH_COMMAND = ('/8ball [question]')
     ANSWERS = [
         "Definitivamente", "Sem dúvidas", "Você pode contar com isso", "Sinais apontam que sim",
-        "Como eu vejo, sim", "Responda nebuloso, tente novamente", "Pergunte novamente mais tarde",
+        "Como eu vejo, sim", "Pergunta nebulosa, tente novamente", "Pergunte novamente mais tarde",
         "Melhor não te falar agora", "Não é possível prever agora", "Concentre-se e pergunte novamente",
         "Não conte com isso", "Minha resposta é não", "Minhas fontes dizem não",
-        "A Perspectiva não é boa", "Muito duvidoso",
+        "A perspectiva não é boa", "Duvido muito",
     ]
 
     REGEX = re.compile("@[A-z0-9_-]+\s(.+?)\?+$", re.UNICODE)
