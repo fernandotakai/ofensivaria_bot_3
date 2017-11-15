@@ -774,4 +774,8 @@ class MagicEightBall(Command):
 
     @reply
     async def respond(self, text, message):
+
+        if not text.startswith('@ofensivaria_bot'):
+            return False
+
         return random.choice(self.ANSWERS)
