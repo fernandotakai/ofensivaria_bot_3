@@ -9,6 +9,8 @@ import logging
 import abc
 import six
 import pytz
+import ujson
+
 from datetime import datetime
 
 from decorator import decorator
@@ -388,21 +390,58 @@ class MessageToGif(Command):
 class ConvertCurrency(Command):
 
     SLASH_COMMAND = ('/convert [value] [symbol]')
+    COINS = ['ADA', 'ADX', 'AE', 'ANT', 'ARDR', 'ARK', 'ATM', 'B3', 'BAT', 'BAY',
+             'BCC', 'BCH', 'BCN', 'BLOCK', 'BNB', 'BNT', 'BQX', 'BTC', 'BTCD',
+             'BTM', 'BTS', 'CNX', 'CVC', 'DASH', 'DCR', 'DGB', 'DGD', 'DOGE', 'EDG',
+             'EOS', 'ETC', 'ETH', 'ETP', 'FAIR', 'FCT', 'FUN', 'GAME', 'GAS', 'GBYTE',
+             'GNO', 'GNT', 'GXS', 'HSR', 'ICN', 'KCS', 'KIN', 'KMD', 'KNC', 'LINK',
+             'LKK', 'LRC', 'LSK', 'LTC', 'MAID', 'MCO', 'MIOTA', 'MONA', 'MTL', 'NAV', 'NEO',
+             'NXS', 'NXT', 'OMG', 'PART', 'PAY', 'PIVX', 'POWR', 'PPT', 'PURA', 'QTUM',
+             'RCN', 'RDN', 'REP', 'SALT', 'SC', 'SNGLS', 'SNT', 'STEEM', 'STORJ', 'STRAT',
+             'SYS', 'TRX', 'UBQ', 'USDT', 'VEN', 'VERI', 'VTC', 'WAVES', 'WTC', 'XAS',
+             'XEM', 'XLM', 'XMR', 'XRP', 'XVG', 'XZC', 'ZEC', 'ZEN', 'ZRX', 'ZSC']
+
+    async def get_coin_value(self, symbol):
+        coins = await self._redis.hgetall('bot:coins')
+
+        if not coins:
+            _, coins = await self.http_get("https://api.coinmarketcap.com/v1/ticker/", params={'convert': 'BRL'})
+            coins = {t['symbol']: float(t['price_brl']) for t in coins}
+
+            await self._redis.hmset_dict('bot:coins', coins)
+            await self._redis.expire('bot:coins', 720)
+
+        try:
+            return float(coins[symbol])
+        except KeyError:
+            return None
+
+    async def get_currency_value(self, symbol):
+        _, json = await self.http_get('http://api.fixer.io/latest', params={'base': symbol, 'symbols': 'BRL'})
+
+        try:
+            return float(json['rates']['BRL'])
+        except KeyError:
+            return None
 
     async def respond(self, text, message):
         symbol = message['args']['symbol']
+
         try:
             value = float(message['args']['value'])
         except ValueError:
             return 'value must be a number'
 
-        _, json = await self.http_get('http://api.fixer.io/latest', params={'base': symbol, 'symbols': 'BRL'})
+        if symbol in self.COINS:
+            currency_value = await self.get_coin_value(symbol)
+        else:
+            currency_value = await self.get_currency_value(symbol)
 
-        if not json or 'error' in json:
+        if not currency_value:
             return "Could not get value for currency %s" % symbol
 
         try:
-            return "R$%.2f" % (value * json['rates']['BRL'])
+            return "R$%.2f" % (float(value) * currency_value)
         except KeyError:
             return 'Could not get value for currency %s' % symbol
 
@@ -714,6 +753,7 @@ class Quote(Command):
                 return self._handle_error()
         else:
             return self.model.make_short_sentence(140)
+
 
 class SgdqSchedule(Command):
 
