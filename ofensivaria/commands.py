@@ -430,6 +430,7 @@ class ConvertCurrency(Command):
 
     async def respond(self, text, message):
         symbol = message['args']['symbol']
+        symbol = symbol.upper()
 
         try:
             value = float(message['args']['value'])
