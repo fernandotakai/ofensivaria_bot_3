@@ -213,8 +213,12 @@ class Command:
             if self.can_respond(text, message):
                 response = await self.respond(text, message)
                 await self.__send_message(response, message)
+                return bool(response)
+            else:
+                return False
         except ValidationException as e:
             await self.__send_message(dict(answer=e.message), message)
+            return True
 
 
 class Ping(Command):

@@ -43,7 +43,7 @@ setup(
             'sgdq = ofensivaria.commands:SgdqSchedule',
             'mtg = ofensivaria.commands:MtgCard',
             'excuse = ofensivaria.commands:ProgrammerExcuses',
-            'eightball = ofensivaria.commands:MagicEightBall',
+            'magic_eightball = ofensivaria.commands:MagicEightBall',
         ],
     },
 

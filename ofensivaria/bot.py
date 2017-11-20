@@ -128,7 +128,7 @@ class TelegramBot:
 
     def __extension_manager_callback(self, ext, *args, **kwargs):
         self.__logger.info('Loading command %s', ext.name)
-        return ext.obj
+        return ext.name, ext.obj
 
     async def setup(self):
         self.redis = await aioredis.create_redis((config.REDIS_HOST, config.REDIS_PORT,), encoding='utf8')
@@ -139,7 +139,8 @@ class TelegramBot:
                                                        invoke_on_load=True,
                                                        invoke_args=(self, self.redis, self.client))
 
-        self.commands = extension_manager.map(self.__extension_manager_callback)
+        commands = extension_manager.map(self.__extension_manager_callback)
+        self.commands = [obj for name, obj in sorted(commands)]
 
         prepare_tasks = [c.prepare() for c in self.commands]
         await asyncio.gather(*prepare_tasks)
@@ -173,7 +174,10 @@ class TelegramBot:
         if message:
             for command in self.commands:
                 try:
-                    await command.process(self, message)
+                    response = await command.process(self, message)
+
+                    if response:
+                        break
                 except Exception as e:
                     self.__logger.exception(e)
 
