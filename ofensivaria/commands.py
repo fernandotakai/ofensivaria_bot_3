@@ -9,7 +9,6 @@ import logging
 import abc
 import six
 import pytz
-import ujson
 
 from datetime import datetime
 
@@ -468,7 +467,6 @@ class MtgCard(Command):
         if not json or 'error' in json:
             return "Spellfire will be reprinted!"
 
-
         try:
             largest = sorted(json['image_uris'])[0]
             image = json['image_uris'].get('large', largest)
@@ -480,7 +478,8 @@ class MtgCard(Command):
             return 'Could not get a card. Try again?'
 
         caption = f"{name}\n{url}\nUSD {price}"
-        response = await self._bot.send_photo(message['chat']['id'], image, caption='')
+        await self._bot.send_photo(message['chat']['id'], image, caption='')
+
         return caption
 
 
@@ -789,11 +788,10 @@ class SgdqSchedule(Command):
         current_event = data['ticker']['current']
         next_event = data['ticker']['next']
         link = data['schedule']['link']
-        current_str = next_str = None
         data = []
 
         if current_event:
-            data.append('Now: %s' %self._format_event(current_event))
+            data.append('Now: %s' % self._format_event(current_event))
         else:
             data.append('Nothing right now')
 
