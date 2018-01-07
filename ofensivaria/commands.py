@@ -759,9 +759,9 @@ class Quote(Command):
             return self.model.make_short_sentence(140)
 
 
-class SgdqSchedule(Command):
+class AgdqSchedule(Command):
 
-    SLASH_COMMAND = ('/sgdq')
+    SLASH_COMMAND = ('/agdq')
     LOCAL_TZ = pytz.timezone('America/Sao_Paulo')
     CHICAGO_TZ = pytz.timezone('America/Chicago')
 
@@ -781,7 +781,7 @@ class SgdqSchedule(Command):
 
     @markdown
     async def respond(self, text, message):
-        url = 'https://horaro.org/-/api/v1/schedules/45114j6eoi219j7ab0/ticker'
+        url = 'https://horaro.org/-/api/v1/schedules/1d11sh83fs23687a70/ticker'
         _, json = await self.http_get(url)
 
         data = json['data']
