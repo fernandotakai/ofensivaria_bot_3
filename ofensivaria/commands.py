@@ -766,7 +766,9 @@ class AgdqSchedule(Command):
     NEW_YORK_TZ = pytz.timezone('America/New_York')
 
     def _format_event(self, event, now=False):
-        title, runners, length, _, _ = event['data']
+        title = event['data'][0]
+        length = event['data'][2]
+
         scheduled_stamp = event['scheduled_t']
         dt = datetime.fromtimestamp(scheduled_stamp, tz=self.NEW_YORK_TZ)
         dt = self.LOCAL_TZ.normalize(dt)
