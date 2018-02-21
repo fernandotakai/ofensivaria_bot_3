@@ -10,7 +10,7 @@ import abc
 import six
 import pytz
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from decorator import decorator
 from ofensivaria import config
@@ -768,7 +768,10 @@ class SpeedrunSchedule(Command):
 
     def _format_event(self, event, now=False):
         title = event['data'][0]
-        length = event['data'][2]
+        platform = event['data'][2]
+        length = timedelta(seconds=event['length_t'])
+
+        title = re.findall('\[(.*?)\]', title)[0]
 
         scheduled_stamp = event['scheduled_t']
         dt = datetime.fromtimestamp(scheduled_stamp, tz=self.NEW_YORK_TZ)
@@ -776,11 +779,11 @@ class SpeedrunSchedule(Command):
         scheduled = dt.strftime('%H:%M')
 
         if not now:
-            return f'{scheduled} - {title} - {length}'
+            return f'{scheduled} - {title} - {platform} - {length}'
         else:
             now = datetime.now(tz=self.LOCAL_TZ)
             diff = dt - now
-            return f'In {diff} - {title}'
+            return f'In {diff} - {title} - {platform} - {length}'
 
     @markdown
     async def respond(self, text, message):
