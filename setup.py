@@ -40,7 +40,7 @@ setup(
             'russian_scoreboard = ofensivaria.commands:RussianScoreboardCommand',
             'yugioh = ofensivaria.commands:YugiOhCard',
             'quote = ofensivaria.commands:Quote',
-            'agdq = ofensivaria.commands:AgdqSchedule',
+            'speedrunschedule = ofensivaria.commands:SpeedrunSchedule',
             'mtg = ofensivaria.commands:MtgCard',
             'excuse = ofensivaria.commands:ProgrammerExcuses',
             'magic_eightball = ofensivaria.commands:MagicEightBall',
