@@ -439,7 +439,7 @@ class ConvertCurrency(Command):
         if symbol in self.COINS:
             currency_value = await self.get_coin_value(symbol)
         else:
-            currency_value = await self.get_currency_value(symbol)
+            return "fixer.io api is now paid. if you want it to work, find a free api that returns currency data"
 
         if not currency_value:
             return "Could not get value for currency %s" % symbol
