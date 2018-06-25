@@ -761,29 +761,27 @@ class Quote(Command):
 
 class SpeedrunSchedule(Command):
 
-    SLASH_COMMAND = ('/esa')
+    SLASH_COMMAND = ('/sgdq')
     LOCAL_TZ = pytz.timezone('America/Sao_Paulo')
-    NEW_YORK_TZ = pytz.timezone('Europe/Berlin')
-    EVENT_ID = '4c110ra4wkff9l7acc'
+    EVENT_TZ = pytz.timezone('America/Chicago')
+    EVENT_ID = '7711pr96ji1e6x7a95'
 
     def _format_event(self, event, now=False):
         title = event['data'][0]
-        platform = event['data'][2]
+        category = event['data'][3]
         length = timedelta(seconds=event['length_t'])
 
-        title = re.findall('\[(.*?)\]', title)[0]
-
         scheduled_stamp = event['scheduled_t']
-        dt = datetime.fromtimestamp(scheduled_stamp, tz=self.NEW_YORK_TZ)
+        dt = datetime.fromtimestamp(scheduled_stamp, tz=self.EVENT_TZ)
         dt = self.LOCAL_TZ.normalize(dt)
         scheduled = dt.strftime('%H:%M')
 
         if not now:
-            return f'{scheduled} - {title} - {platform} - {length}'
+            return f'{scheduled} - {title} - {category} - {length}'
         else:
             now = datetime.now(tz=self.LOCAL_TZ)
             diff = dt - now
-            return f'In {diff} - {title} - {platform} - {length}'
+            return f'In {diff} - {title} - {category} - {length}'
 
     @markdown
     async def respond(self, text, message):
