@@ -781,7 +781,7 @@ class SpeedrunSchedule(Command):
         else:
             now = datetime.now(tz=self.LOCAL_TZ)
             diff = dt - now
-            return f'In {diff} - {title} - {category} - {length}'
+            return f'\nIn {diff} - {title} - {category} - {length}'
 
     @markdown
     async def respond(self, text, message):
